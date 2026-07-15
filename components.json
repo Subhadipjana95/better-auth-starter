@@ -22,6 +22,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@grootstudio": "https://grootstudio.vercel.app/r/{name}.json"
+    "@grootstudio": "https://grootstudio.vercel.app/r/{name}.json",
+    "@ncdai": "https://chanhdai.com/r/{name}.json"
   }
 }
