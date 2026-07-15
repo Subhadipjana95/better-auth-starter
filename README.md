@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Groot Auth
+
+A Next.js 16 starter focused on authentication with [Better Auth](https://www.better-auth.com/), Drizzle, and a small set of polished UI primitives. The app includes a landing page, login and signup flows, a protected dashboard, and server-side auth handlers wired to a PostgreSQL database.
+
+## What This Project Does
+
+- Public landing page at `/` with a hero section.
+- Login page at `/login` with Google, GitHub, and email/password sign-in.
+- Signup page at `/signup` with Google, GitHub, and email/password sign-up.
+- Protected dashboard at `/dashboard` with logout.
+- Better Auth route handler at `/api/auth/[...all]`.
+- Route protection for `/dashboard` through `proxy.ts`.
+- Toast feedback for auth success and failure states.
+
+## Tech Stack
+
+- Next.js App Router
+- React 19
+- TypeScript
+- Better Auth
+- Drizzle ORM
+- Neon serverless PostgreSQL driver
+- Tailwind CSS v4
+- shadcn/ui-style components
+- Sonner for toasts
+
+## Project Structure
+
+```text
+app/
+  page.tsx               Landing page
+  login/page.tsx          Login screen
+  signup/page.tsx         Signup screen
+  dashboard/page.tsx      Protected dashboard
+  api/auth/[...all]/      Better Auth route handler
+components/
+  login-form.tsx         Email/social login form
+  signup-form.tsx        Email/social signup form
+  logout.tsx             Sign out button
+  ui/                    Shared UI primitives
+db/
+  drizzle.ts             Drizzle database connection
+  schema.ts              Auth-related tables
+  relations.ts           Relation helpers
+lib/
+  auth.ts                Server auth configuration
+  auth-client.ts         Client auth configuration
+server/
+  users.ts               Server actions for sign in/up/out
+proxy.ts                 Dashboard access guard
+```
+
+## Authentication Flow
+
+The app uses Better Auth on both the server and client.
+
+- `lib/auth.ts` configures Better Auth with email/password and Google/GitHub providers.
+- `lib/auth-client.ts` creates the browser client used by the forms and logout button.
+- `server/users.ts` wraps email/password sign-in and sign-up in server actions.
+- `app/api/auth/[...all]/route.ts` exposes the Better Auth handler to Next.js.
+- `proxy.ts` redirects unauthenticated users away from `/dashboard` and to `/login`.
+
+## Database
+
+The database layer uses Drizzle and PostgreSQL tables for the auth domain:
+
+- `user`
+- `session`
+- `account`
+- `verification`
+
+`db/drizzle.ts` reads `DATABASE_URL` and initializes the Drizzle client. `db/schema.ts` defines the auth tables used by Better Auth.
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create a `.env.local` file and add the required environment variables.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+DATABASE_URL=
+BETTER_AUTH_URL=
+BASE_URL=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Run the development server.
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Open `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `pnpm dev` - start the development server.
+- `pnpm build` - create a production build.
+- `pnpm start` - run the production server.
+- `pnpm lint` - run ESLint.
 
-## Deploy on Vercel
+## Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- The app uses `sonner` for notifications and a shared toaster mounted in the root layout.
+- Login and signup forms currently support email/password and Google/GitHub social auth.
+- Dashboard access is guarded at the route level, so unauthenticated users are redirected before the page renders.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Before deploying, make sure the environment variables above are configured in your hosting provider and that the database schema has been applied.
